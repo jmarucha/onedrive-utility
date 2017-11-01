@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
 import onedrivesdk
-from onedrivesdk.helpers import GetAuthCodeServer
+from onedrivesdk.version_bridge.fragment_upload import ItemUploadFragmentBuilder
 import os
-import re
 import argparse
-
 
 client = None;
 
@@ -54,11 +52,11 @@ def pull(client, src, dest):
     client.item(path = src).download(dest)
 
 def push(client, src, dest):
-    src = add_slash(src)
     dest, filename = dest.rsplit('/', 1)
     if filename == "":
         filename = src.split('/')[-1]
-    client.item(path = dest).children[filename].upload(src)
+    c = client.item(path = dest).children[filename]
+    c.upload_async(src)
 
 def main():
     args = parse_args();
