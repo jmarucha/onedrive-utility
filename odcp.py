@@ -30,6 +30,7 @@ def auth_client():
         http_provider=http_provider,
         client_id=client_id,
         scopes=scopes)
+    client = onedrivesdk.OneDriveClient(api_base_url, auth_provider, http_provider)
     try: 
         auth_provider.load_session()
         auth_provider.refresh_token()
@@ -43,8 +44,7 @@ def auth_client():
         code = input('Paste code here: ')
         auth_provider.authenticate(code, redirect_uri, client_secret)
         auth_provider.save_session()
-
-    return onedrivesdk.OneDriveClient(api_base_url, auth_provider, http_provider)
+    return client
 
 
 def pull(client, src, dest):
@@ -64,16 +64,6 @@ def main():
     args = parse_args();
     client = auth_client();
 
-    items = client.item(id='root').children.get()
-    for i in items:
-        print(i.name + ' ' + i.id)
-
-    items = client.item(path="/").children.get()
-    for i in items:
-        print(i.name + ' ' + i.id)
-    items = client.item(path="/Documents").children.get()
-    for i in items:
-        print(i.name + ' ' + i.id)
     if args.source.startswith('od:') and args.destination.startswith('od:'): 
         drive_to_drive(args.source[3:], args.destination[3:])
     elif args.source.startswith('od:'):
